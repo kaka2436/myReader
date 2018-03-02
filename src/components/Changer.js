@@ -1,3 +1,6 @@
+/*
+ * 改变书籍位置的下拉列表组件
+ */
 import React, {Component} from 'react'
 
 class Changer extends Component {

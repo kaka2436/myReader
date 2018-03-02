@@ -1,3 +1,7 @@
+/*
+ * 书架展示组件
+ */
+
 import React , {Component} from 'react'
 import OpenSearchBooks from './OpenSearchBooks'
 import Bookshelf from './Bookshelf'

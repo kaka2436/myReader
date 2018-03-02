@@ -1,5 +1,6 @@
 import React , {Component} from 'react'
 
+//打开搜索按钮组件
 class OpenSearchBooks extends Component{
     render(){
         return (

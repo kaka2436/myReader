@@ -1,3 +1,6 @@
+/*
+ * 书籍展示组件，显示一组书
+ */
 import React from 'react'
 import Changer from './Changer'
 

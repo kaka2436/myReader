@@ -1,3 +1,7 @@
+/*
+ *  搜索页面组件
+ */
+
 import React , {Component} from 'react'
 import {search} from '../BooksAPI'
 import Book from './Book'
@@ -13,7 +17,7 @@ class SearchBooksPage extends Component{
         this.bookDiv = this.bookDiv.bind(this);
         this.removeBook = this.removeBook.bind(this);
     }
-
+    //处理图书搜索输入框的输入操作
     inputHandler(e){
         const searchText = e.target.value;
         this.setState({searchValue:searchText});
@@ -27,6 +31,7 @@ class SearchBooksPage extends Component{
             }));
         }
     }
+    //构建搜索结果显示
     bookDiv(){
         if (this.state.result !== undefined) {
             return this.state.result.map((book) => {
@@ -47,6 +52,7 @@ class SearchBooksPage extends Component{
             )
         }
     }
+    //在用户将搜索结果添加到书架后，移除该书籍在搜索窗口的显示
     removeBook(book){
         const index = this.state.result.indexOf(book);
         const books = this.state.result;

@@ -1,3 +1,6 @@
+/*
+ * 书架每一层的显示组件，显示一类书
+ */
 import React from 'react'
 import Book from './Book'
 

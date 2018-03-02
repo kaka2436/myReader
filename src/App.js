@@ -1,13 +1,18 @@
+/*主程序
+ *决定显示书架页面还是搜索页面
+ */
 import React from 'react'
-// import * as BooksAPI from './BooksAPI'
 import './App.css'
+//导入自定义搜索页面组件
 import SearchBooksPage from './components/SearchBooks'
-
+//导入自定义书架页面组件
 import ListBooks from './components/ListBooks'
 
+// 定义主程序组件
 class BooksApp extends React.Component {
   constructor(props){
       super(props);
+      // 定义现有书籍的数据
       this.state = {
           current:{
               title:'Currently Reading',
@@ -66,24 +71,34 @@ class BooksApp extends React.Component {
                   }
               ]
           },
+          //决定是否显示搜索页面
+          //true显示
+          //false显示书架
           showSearchPage: false
       };
       this.closeSearchBooks = this.closeSearchBooks.bind(this);
       this.openSearchBooks = this.openSearchBooks.bind(this);
       this.changePosition = this.changePosition.bind(this);
   }
+
+  //定义返回书架页面的函数，传入搜索页面组件中进行调用
   closeSearchBooks(){
     this.setState({
         showSearchPage:false
     });
   }
 
+  //定义打开搜索页面的函数
   openSearchBooks(){
     this.setState({
         showSearchPage:true
     });
   }
-
+    /*
+     * 更改书籍位置的函数
+     * 传入参数：书籍现有位置，书籍新位置，书籍本身
+     * 该函数传入书架组件及搜索页面进行使用
+     */
     changePosition(oldPos,newPos,book){
       if(oldPos === 'none'){
           const np = this.state[newPos];

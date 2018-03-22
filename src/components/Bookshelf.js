@@ -5,11 +5,9 @@ import React from 'react'
 import Book from './Book'
 
 function Bookshelf(props) {
-
     const title = props.title;
-    const books = props.books;
-    const bookDiv = books.map((book)=>
-        <li key={book.title}><Book book={book} change={props.change}/></li>
+    const bookDiv = props.books.map((book)=>
+        <li key={book.title}><Book book={book} changer={props.changer}/></li>
     );
     return (
         <div className="bookshelf">

@@ -11,13 +11,13 @@ function Book(props) {
                 <div className="book-cover" style={{
                     width: 128,
                     height: 193,
-                    backgroundImage: props.book.url
+                    backgroundImage: `url(${props.book.imageLinks.thumbnail})`
                 }}></div>
-                <Changer book={props.book} change={props.change} remove={props.remove} rbook={props.rbook}/>
+                <Changer book={props.book} changer={props.changer} isSearch={props.isSearch}/>
             </div>
-            <div className="book-title">{props.book.name}</div>
+            <div className="book-title">{props.book.title}</div>
             <div className="book-authors">{(
-                    props.book.author?props.book.author.join('，'):'unknow'
+                    props.book.authors
             )}</div>
         </div>
     )

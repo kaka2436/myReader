@@ -2,43 +2,33 @@
  * 改变书籍位置的下拉列表组件
  */
 import React, {Component} from 'react'
+import * as BookAPI from '../BooksAPI'
 
 class Changer extends Component {
     constructor(props) {
         super(props);
-        let current = this.props.book.current;
-        let selectValue = '';
-        if (current === 'current') {
-            selectValue = 'current';
-        } else if (current === 'want') {
-            selectValue = 'wantToRead';
-        } else if (current === 'read') {
-            selectValue = 'read';
-        } else if (current === 'none') {
-            selectValue = 'none'
+        let current = this.props.book.shelf;
+        if(current === undefined){
+            current = 'none';
+            this.props.book.shelf = 'none';
         }
         this.state = {
-            value: selectValue
+            value: current
         };
         this.handlerChange = this.handlerChange.bind(this);
     }
     handlerChange(e) {
-        if (this.state.value === 'none') {
-            this.props.remove(this.props.rbook);
+        BookAPI.update(this.props.book, e.target.value);
+        if(this.props.isSearch !== true){
+            this.props.changer(this.props.book.shelf,e.target.value,this.props.book,false);
+        }else{
+            this.props.changer(this.props.book.shelf,e.target.value,this.props.book,true);
         }
-        let newValue = e.target.value;
-        let newPos = '';
-        if (newValue === 'currentlyReading') {
-            newPos = 'current';
-        } else if (newValue === 'wantToRead') {
-            newPos = 'want';
-        } else if (newValue === 'read') {
-            newPos = 'read';
-        } else if (newValue === 'none') {
-            newPos = 'none';
-        }
-        this.props.change(this.props.book.current, newPos, this.props.book);
+        this.setState({
+            value:e.target.value
+        })
     }
+
     render() {
         return(
             <div className="book-shelf-changer" >

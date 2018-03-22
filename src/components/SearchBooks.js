@@ -5,6 +5,8 @@
 import React , {Component} from 'react'
 import {search} from '../BooksAPI'
 import Book from './Book'
+import { Debounce } from 'react-throttle'
+import {Link} from 'react-router-dom'
 
 class SearchBooksPage extends Component{
     constructor(props){
@@ -15,7 +17,6 @@ class SearchBooksPage extends Component{
         };
         this.inputHandler = this.inputHandler.bind(this);
         this.bookDiv = this.bookDiv.bind(this);
-        this.removeBook = this.removeBook.bind(this);
     }
     //处理图书搜索输入框的输入操作
     inputHandler(e){
@@ -26,48 +27,51 @@ class SearchBooksPage extends Component{
                 result:[]
             })
         }else {
-            search(searchText).then((res) => this.setState({
-                result: res
-            }));
+            search(searchText).then((res) => {
+                if (Array.isArray(res)){
+                    this.setState({
+                        result: res
+                    })
+                }
+            });
         }
     }
     //构建搜索结果显示
     bookDiv(){
-        if (this.state.result !== undefined) {
+        if (Array.isArray(this.state.result)) {
             return this.state.result.map((book) => {
-                    let img = '';
-                    if(book.imageLinks){
-                        img = book.imageLinks.thumbnail;
-                    }else{
-                        img = book.previewLink;
-                    }
-                    let b = {
-                        url: `url("${img}")`,
-                        title: book.title,
-                        author: book.authors,
-                        current: 'none'
-                    };
-                    return (<li key={b.title}><Book book={b} change={this.props.change} remove={this.removeBook} rbook={book}/></li>)
+                    this.props.current.map((cbook)=>{
+                        if(cbook.id === book.id){
+                            book.shelf = 'currentlyReading'
+                        }
+                        return true
+                    });
+                    this.props.want.map((cbook)=>{
+                        if(cbook.id === book.id){
+                            book.shelf = 'wantToRead'
+                        }
+                        return true
+                    });
+                    this.props.read.map((cbook)=>{
+                        if(cbook.id === book.id){
+                            book.shelf = 'read'
+                        }
+                        return true
+                    });
+                    return (<li key={book.title}><Book book={book} changer={this.props.changer} isSearch={true}/></li>)
                 }
             )
         }
-    }
-    //在用户将搜索结果添加到书架后，移除该书籍在搜索窗口的显示
-    removeBook(book){
-        const index = this.state.result.indexOf(book);
-        const books = this.state.result;
-        books.splice(index,1);
-        this.setState({
-            result:books
-        })
     }
 
     render() {
         return (<div className="search-books">
                 <div className="search-books-bar">
-                    <a className="close-search" onClick={this.props.back}>Close</a>
+                    <Link className="close-search" to='/'>Close</Link>
                     <div className="search-books-input-wrapper">
-                        <input type="text" placeholder="Search by title or author" onChange={this.inputHandler}/>
+                        <Debounce time="800" handler="onChange">
+                            <input type="text" placeholder="Search by title or author" onChange={this.inputHandler}/>
+                        </Debounce>
                     </div>
                 </div>
                 <div className="search-books-results">

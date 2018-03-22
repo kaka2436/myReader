@@ -2,11 +2,14 @@
  *决定显示书架页面还是搜索页面
  */
 import React from 'react'
+import {Route} from 'react-router-dom'
 import './App.css'
 //导入自定义搜索页面组件
 import SearchBooksPage from './components/SearchBooks'
 //导入自定义书架页面组件
-import ListBooks from './components/ListBooks'
+import * as BookAPI from './BooksAPI'
+import Bookshelf from './components/Bookshelf'
+import OpenSearchBooks from './components/OpenSearchBooks'
 
 // 定义主程序组件
 class BooksApp extends React.Component {
@@ -14,146 +17,136 @@ class BooksApp extends React.Component {
       super(props);
       // 定义现有书籍的数据
       this.state = {
-          current:{
-              title:'Currently Reading',
-              books:[
-                  {
-                      url:'url("http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api")',
-                      title:'To Kill a Mockingbird',
-                      author:['Harper Lee'],
-                      current:'current'
-                  },
-                  {
-                      url:'url("http://books.google.com/books/content?id=yDtCuFHXbAYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72RRiTR6U5OUg3IY_LpHTL2NztVWAuZYNFE8dUuC0VlYabeyegLzpAnDPeWxE6RHi0C2ehrR9Gv20LH2dtjpbcUcs8YnH5VCCAH0Y2ICaKOTvrZTCObQbsfp4UbDqQyGISCZfGN&source=gbs_api")',
-                      title:'Ender\'s Game',
-                      author:['Orson Scott Card'],
-                      current:'current'
-                  },
-              ]
-          },
-          want:{
-              title:'Want to Read',
-              books:[
-                  {
-                      url:'url("http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api")',
-                      title:1776,
-                      author:['David McCullough'],
-                      current:'want'
-                  },
-                  {
-                      url:'url("http://books.google.com/books/content?id=wrOQLV6xB-wC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72G3gA5A-Ka8XjOZGDFLAoUeMQBqZ9y-LCspZ2dzJTugcOcJ4C7FP0tDA8s1h9f480ISXuvYhA_ZpdvRArUL-mZyD4WW7CHyEqHYq9D3kGnrZCNiqxSRhry8TiFDCMWP61ujflB&source=gbs_api")',
-                      title:'Harry Potter and the Sorcerer\'s Stone',
-                      author:['J.K. Rowling'],
-                      current:'want'
-                  }
-              ]
-          },
-          read:{
-              title:'Read',
-              books:[
-                  {
-                      url:'url("http://books.google.com/books/content?id=pD6arNyKyi8C&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70Rw0CCwNZh0SsYpQTkMbvz23npqWeUoJvVbi_gXla2m2ie_ReMWPl0xoU8Quy9fk0Zhb3szmwe8cTe4k7DAbfQ45FEzr9T7Lk0XhVpEPBvwUAztOBJ6Y0QPZylo4VbB7K5iRSk&source=gbs_api")',
-                      title:'The Hobbit',
-                      author:['J.R.R. Tolkien'],
-                      current:'read'
-                  },
-                  {
-                      url:'url("http://books.google.com/books/content?id=1q_xAwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE712CA0cBYP8VKbEcIVEuFJRdX1k30rjLM29Y-dw_qU1urEZ2cQ42La3Jkw6KmzMmXIoLTr50SWTpw6VOGq1leINsnTdLc_S5a5sn9Hao2t5YT7Ax1RqtQDiPNHIyXP46Rrw3aL8&source=gbs_api")',
-                      title:'Oh, the Places You\'ll Go!',
-                      author:['Seuss'],
-                      current:'read'
-                  },
-                  {
-                      url:'url("http://books.google.com/books/content?id=32haAAAAMAAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72yckZ5f5bDFVIf7BGPbjA0KYYtlQ__nWB-hI_YZmZ-fScYwFy4O_fWOcPwf-pgv3pPQNJP_sT5J_xOUciD8WaKmevh1rUR-1jk7g1aCD_KeJaOpjVu0cm_11BBIUXdxbFkVMdi&source=gbs_api")',
-                      title:'The Adventures of Tom Sawyer',
-                      author:['Mark Twain'],
-                      current:'read'
-                  }
-              ]
-          },
+          currentlyReading:[],
+          wantToRead:[],
+          read:[],
           //决定是否显示搜索页面
           //true显示
           //false显示书架
-          showSearchPage: false
       };
-      this.closeSearchBooks = this.closeSearchBooks.bind(this);
-      this.openSearchBooks = this.openSearchBooks.bind(this);
-      this.changePosition = this.changePosition.bind(this);
+      this.getBooks = this.getBooks.bind(this);
+      this.changePosition = this.changePosition.bind(this)
   }
 
-  //定义返回书架页面的函数，传入搜索页面组件中进行调用
-  closeSearchBooks(){
-    this.setState({
-        showSearchPage:false
-    });
+  componentDidMount(){
+      this.getBooks();
   }
-
-  //定义打开搜索页面的函数
-  openSearchBooks(){
-    this.setState({
-        showSearchPage:true
-    });
-  }
-    /*
-     * 更改书籍位置的函数
-     * 传入参数：书籍现有位置，书籍新位置，书籍本身
-     * 该函数传入书架组件及搜索页面进行使用
-     */
-    changePosition(oldPos,newPos,book){
-      if(oldPos === 'none'){
-          const np = this.state[newPos];
-          book.current = newPos;
-          np.books.push(book);
-          this.setState({
-              [newPos]:np
-          })
-      }else if(newPos === 'none'){
-          const op = this.state[oldPos];
-          const index = op.books.indexOf(book);
-          if(index !== -1){
-              op.books.splice(index,1);
+  changePosition(oldPos,newPos,book,isSearch){
+      if(oldPos === newPos){
+          return
+      }else if(isSearch === false){
+          if(newPos === 'none'){
+              const op = this.state[oldPos];
+              const index = op.indexOf(book);
+              if(index !== -1){
+                  op.splice(index,1);
+                  this.setState({
+                      [oldPos]:op
+                  })
+              }
+          }else{
+              const op = this.state[oldPos];
+              const index = op.indexOf(book);
+              if(index !== -1){
+                  op.splice(index,1);
+                  this.setState({
+                      [oldPos]:op
+                  })
+              }
+              const np = this.state[newPos];
+              book.shelf = newPos;
+              np.push(book);
               this.setState({
-                  [oldPos]:op
+                  [newPos]:np
               })
           }
       }else{
-          const op = this.state[oldPos];
-          const index = op.books.indexOf(book);
-          if(index !== -1){
-              op.books.splice(index,1);
+          if(oldPos !== 'none'){
+              const op = this.state[oldPos];
+              let index = 0;
+              let flag = false;
+              for(index = 0 ; this.state[oldPos].length;index++){
+                  if(this.state[oldPos][index].id === book.id){
+                      flag = true;
+                      break;
+                  }
+              }
+              if(flag){
+                  op.splice(index,1);
+                  this.setState({
+                      [oldPos]:op
+                  })
+              }
+          }
+
+          if(newPos !== 'none') {
+              const np = this.state[newPos];
+              book.shelf = newPos;
+              np.push(book);
               this.setState({
-                  [oldPos]:op
+                  [newPos]: np
               })
           }
-          const np = this.state[newPos];
-          book.current = newPos;
-          np.books.push(book);
-          this.setState({
-              [newPos]:np
-          })
-      }
-    }
+  }}
 
-  render() {
-    return (
-      <div className="app">
-          {this.state.showSearchPage ? (
-              <SearchBooksPage
-                  back={this.closeSearchBooks}
-                  change={this.changePosition}
-              />
-          ) : (
-              <ListBooks
-                  open={this.openSearchBooks}
-                  current={this.state.current}
-                  want={this.state.want}
-                  read={this.state.read}
-                  change={this.changePosition}
-              />
-          )}
-      </div>
-    )
+
+    getBooks(){
+      let current = [];
+      let want = [];
+      let read = [];
+      BookAPI.getAll().then((books)=>{
+          if (Array.isArray(books)){
+              books.map((book)=>{
+                  if (book.shelf === 'currentlyReading'){
+                      current.push(book)
+                  }else if(book.shelf === 'wantToRead'){
+                      want.push(book)
+                  }else if(book.shelf === 'read'){
+                      read.push(book)
+                  }
+                  return true
+              });
+              this.setState({
+                  currentlyReading:current,
+                  wantToRead:want,
+                  read:read
+              })
+          }
+      }).catch((error) => {
+          console.log(error.toString());
+      });
   }
+
+
+  render(){
+      return (
+          <div className="app">
+              <Route exact path='/' render={()=>(
+                  <div className="list-books">
+                      <div className="list-books-title">
+                          <h1>MyReads</h1>
+                      </div>
+                      <div className="list-books-content">
+                          <div>
+                              <Bookshelf title={'CurrentReading'} books={this.state.currentlyReading} changer={this.changePosition}/>
+                              <Bookshelf title={'Want'} books={this.state.wantToRead} changer={this.changePosition}/>
+                              <Bookshelf title={'read'} books={this.state.read} changer={this.changePosition}/>
+                          </div>
+                      </div>
+                      <OpenSearchBooks/>
+                  </div>
+              )} />
+              <Route path='/Search' render={()=>(
+                  <SearchBooksPage
+                      changer={this.changePosition}
+                      current={this.state.currentlyReading}
+                      want={this.state.wantToRead}
+                      read={this.state.read}
+                      />
+              )}/>
+          </div>
+        )
+    }
 }
 
 export default BooksApp

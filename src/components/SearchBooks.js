@@ -58,7 +58,7 @@ class SearchBooksPage extends Component{
                         }
                         return true
                     });
-                    return (<li key={book.title}><Book book={book} changer={this.props.changer} isSearch={true}/></li>)
+                    return (<li key={book.title+Math.round(Math.random()*1000)}><Book book={book} changer={this.props.changer} isSearch={true}/></li>)
                 }
             )
         }

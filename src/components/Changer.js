@@ -18,12 +18,17 @@ class Changer extends Component {
         this.handlerChange = this.handlerChange.bind(this);
     }
     handlerChange(e) {
-        BookAPI.update(this.props.book, e.target.value);
-        if(this.props.isSearch !== true){
-            this.props.changer(this.props.book.shelf,e.target.value,this.props.book,false);
-        }else{
-            this.props.changer(this.props.book.shelf,e.target.value,this.props.book,true);
-        }
+        e.persist();
+        let shelf = e.target.value;
+        BookAPI.update(this.props.book, shelf).then(()=>{
+            if(this.props.isSearch !== true){
+                this.props.changer(this.props.book.shelf,shelf,this.props.book,false);
+            }else{
+                this.props.changer(this.props.book.shelf,shelf,this.props.book,true);
+            }
+        }).catch(()=>{
+            alert("网络连接故障，请检查网络");
+        });
         this.setState({
             value:e.target.value
         })

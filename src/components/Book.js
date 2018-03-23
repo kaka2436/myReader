@@ -5,13 +5,19 @@ import React from 'react'
 import Changer from './Changer'
 
 function Book(props) {
+    let imgUrl;
+    if (props.book.hasOwnProperty("imageLinks")){
+        imgUrl = props.book.imageLinks.thumbnail;
+    }else{
+        imgUrl = "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3175501794,1851207697&fm=27&gp=0.jpg"
+    }
     return (
         <div className="book">
             <div className="book-top">
                 <div className="book-cover" style={{
                     width: 128,
                     height: 193,
-                    backgroundImage: `url(${props.book.imageLinks.thumbnail})`
+                    backgroundImage: `url(${imgUrl})`
                 }}></div>
                 <Changer book={props.book} changer={props.changer} isSearch={props.isSearch}/>
             </div>
